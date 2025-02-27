@@ -31,7 +31,7 @@ jobs:
       - name: Compile Java Code and Tests
         run: |
               mkdir -p bin
-              find src/org/jfree/data tests/org/jfree/data -name "*.java" > sources.txt
+              find src/org.jfree.data tests/org.jfree.data -name "*.java" > sources.txt
               javac -d bin -cp "lib/jfreechart.jar:lib/jcommon.jar:lib/junit-platform-console-standalone.jar:lib/mockito-core.jar" @sources.txt
 
       
