@@ -25,7 +25,7 @@ jobs:
       - name: Compile Java Code and Tests
         run: |
           mkdir -p bin
-          javac -d bin -cp lib/junit-platform-console-standalone.jar:lib/mockito-core.jar src/data/*.java tests/org/jfree/data/*.java
+          javac -d bin -cp lib/junit-platform-console-standalone.jar:lib/mockito-core.jar src tests/org/jfree/data/*.java
       
       - name: Run JUnit Tests
         run: |
