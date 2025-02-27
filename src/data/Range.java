@@ -344,21 +344,21 @@ public strictfp class Range implements Serializable {
         return true;
     }
 
-    /**
-     * Returns a hash code. The hash code should be an integer which is
-     * deterministically calculated for any range.
-     * 
-     * @return A hash code for this range.
-     */
-    public int hashCode() {
-        int result;
-        long temp;
-        temp = Double.doubleToLongBits(this.lower);
-        result = (int) (temp ^ (temp >>> 32));
-        temp = Double.doubleToLongBits(this.upper);
-        result = 29 * result + (int) (temp ^ (temp >>> 32));
-        return result;
-    }
+//    /**
+//     * Returns a hash code. The hash code should be an integer which is
+//     * deterministically calculated for any range.
+//     * 
+//     * @return A hash code for this range.
+//     */
+//    public int hashCode() {
+//        int result;
+//        long temp;
+//        temp = Double.doubleToLongBits(this.lower);
+//        result = (int) (temp ^ (temp >>> 32));
+//        temp = Double.doubleToLongBits(this.upper);
+//        result = 29 * result + (int) (temp ^ (temp >>> 32));
+//        return result;
+//    }
 
     /**
      * Returns a string representation of this Range.

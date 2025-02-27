@@ -1,5 +1,7 @@
 package org.jfree.data;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Matchers.anyInt;
@@ -12,102 +14,106 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import data.DataUtilities;
+import data.DefaultKeyedValues;
 import data.KeyedValues;
 import data.Values2D;
 
 class DataUtilTest {
-
-    private Values2D value;
-
-    @BeforeEach
-    void setUp() {
-        value = mock(Values2D.class);
-        when(value.getColumnCount()).thenReturn(4);
-        when(value.getRowCount()).thenReturn(3);
-
-        when(value.getValue(0, 2)).thenReturn(5);
-        when(value.getValue(1, 2)).thenReturn(7);
-        when(value.getValue(2, 2)).thenReturn(1);
-    }
-
-
-    @Test
-    void testCalculateColumnTotal() {
-        assertEquals(13, DataUtilities.calculateColumnTotal(value, 2), .01d);
-        verify(value, times(3)).getValue(anyInt(), anyInt());
-    }
-
-    @Test
-    void testCalculateRowTotal() {
-        when(value.getValue(1, 0)).thenReturn(2);
-        when(value.getValue(1, 1)).thenReturn(3);
-        when(value.getValue(1, 2)).thenReturn(4);
-        when(value.getValue(1, 3)).thenReturn(5);
-
-        assertEquals(14, DataUtilities.calculateRowTotal(value, 1), .01d);
-        verify(value, times(4)).getValue(anyInt(), anyInt());
-    }
-
-    @Test
-    void testCreateNumberArray() {
-        double[] data = {1.0, 2.0, 3.0};
+	
+	@Test
+    void testCreateNumberArrayWithValidInput() {
+        double[] data = {1.1, 2.2, 3.3};
         Number[] result = DataUtilities.createNumberArray(data);
+        assertArrayEquals(new Number[]{1.1, 2.2, 3.3}, result);
+    }
 
-        assertEquals(3, result.length);
-        assertEquals(1.0, result[0].doubleValue(), .01d);
-        assertEquals(2.0, result[1].doubleValue(), .01d);
-        assertEquals(3.0, result[2].doubleValue(), .01d);
+    @Test
+    void testCreateNumberArrayWithEmptyArray() {
+        double[] data = {};
+        Number[] result = DataUtilities.createNumberArray(data);
+        assertArrayEquals(new Number[]{}, result);
     }
 
     @Test
     void testCreateNumberArrayWithNullInput() {
-        assertThrows(IllegalArgumentException.class, () -> {
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             DataUtilities.createNumberArray(null);
         });
+        assertTrue(exception.getMessage().contains("Null"));
     }
 
     @Test
-    void testCreateNumberArray2D() {
-        double[][] data = {{1.0, 2.0}, {3.0, 4.0}};
+    void testCreateNumberArray2DWithValidInput() {
+        double[][] data = {{1.1, 2.2}, {3.3, 4.4}};
         Number[][] result = DataUtilities.createNumberArray2D(data);
+        assertArrayEquals(new Number[][]{{1.1, 2.2}, {3.3, 4.4}}, result);
+    }
 
-        assertEquals(2, result.length);
-        assertEquals(2, result[0].length);
-        assertEquals(1.0, result[0][0].doubleValue(), .01d);
-        assertEquals(2.0, result[0][1].doubleValue(), .01d);
-        assertEquals(3.0, result[1][0].doubleValue(), .01d);
-        assertEquals(4.0, result[1][1].doubleValue(), .01d);
+    @Test
+    void testCreateNumberArray2DWithEmptyArray() {
+        double[][] data = {};
+        Number[][] result = DataUtilities.createNumberArray2D(data);
+        assertArrayEquals(new Number[][]{}, result);
     }
 
     @Test
     void testCreateNumberArray2DWithNullInput() {
-        assertThrows(IllegalArgumentException.class, () -> {
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             DataUtilities.createNumberArray2D(null);
         });
+        assertTrue(exception.getMessage().contains("Null"));
     }
 
     @Test
-    void testGetCumulativePercentages() {
-        KeyedValues data = mock(KeyedValues.class);
-        when(data.getItemCount()).thenReturn(3);
-        when(data.getKey(0)).thenReturn("Key1");
-        when(data.getKey(1)).thenReturn("Key2");
-        when(data.getKey(2)).thenReturn("Key3");
-        when(data.getValue(0)).thenReturn(5);
-        when(data.getValue(1)).thenReturn(9);
-        when(data.getValue(2)).thenReturn(2);
+    void testGetCumulativePercentagesWithValidData() {
+        DefaultKeyedValues data = new DefaultKeyedValues();
+        data.addValue("A", 5);
+        data.addValue("B", 9);
+        data.addValue("C", 2);
 
         KeyedValues result = DataUtilities.getCumulativePercentages(data);
-
-        assertEquals(0.3125, result.getValue("Key1").doubleValue(), .01d);
-        assertEquals(0.875, result.getValue("Key2").doubleValue(), .01d);
-        assertEquals(1.0, result.getValue("Key3").doubleValue(), .01d);
+        assertEquals(0.3125, result.getValue("A").doubleValue(), 0.00001);
+        assertEquals(0.875, result.getValue("B").doubleValue(), 0.00001);
+        assertEquals(1.0, result.getValue("C").doubleValue(), 0.00001);
     }
 
     @Test
-    void testGetCumulativePercentagesWithNullInput() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            DataUtilities.getCumulativePercentages(null);
-        });
+    void testGetCumulativePercentagesWithZeroValues() {
+        DefaultKeyedValues data = new DefaultKeyedValues();
+        data.addValue("A", 0);
+        data.addValue("B", 0);
+        data.addValue("C", 0);
+
+        KeyedValues result = DataUtilities.getCumulativePercentages(data);
+        assertTrue(Double.isNaN(result.getValue("A").doubleValue()));
+        assertTrue(Double.isNaN(result.getValue("B").doubleValue()));
+        assertTrue(Double.isNaN(result.getValue("C").doubleValue()));
+    }
+
+    @Test
+    void testCalculateColumnTotalWithMultipleColumns() {
+        Values2D data = mock(Values2D.class);
+        when(data.getRowCount()).thenReturn(3);
+        when(data.getValue(0, 0)).thenReturn(5);
+        when(data.getValue(1, 0)).thenReturn(9);
+        when(data.getValue(2, 1)).thenReturn(2);
+
+        double result = DataUtilities.calculateColumnTotal(data, 0);
+        assertEquals(14.0, result);
+    }
+
+    @Test
+    void testCalculateRowTotalWithMultipleRows() {
+        Values2D data = mock(Values2D.class);
+        when(data.getColumnCount()).thenReturn(3);
+        when(data.getValue(0, 0)).thenReturn(4);
+        when(data.getValue(0, 1)).thenReturn(7);
+        when(data.getValue(0, 2)).thenReturn(3);
+        when(data.getValue(1, 0)).thenReturn(2);
+        when(data.getValue(1, 1)).thenReturn(6);
+        when(data.getValue(1, 2)).thenReturn(1);
+
+        double result = DataUtilities.calculateRowTotal(data, 1);
+        assertEquals(9.0, result);
     }
 }
