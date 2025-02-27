@@ -26,7 +26,7 @@ jobs:
         run: |
           mkdir -p bin
           find src tests -name "*.java" > sources.txt
-          javac -d bin -cp lib/junit-platform-console-standalone.jar:lib/mockito-core.jar @sources.txt
+          javac -d bin -cp "lib/*" @sources.txt
       
       - name: Run JUnit Tests
         run: |
