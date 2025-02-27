@@ -21,14 +21,19 @@ jobs:
           mkdir lib
           curl -L -o lib/junit-platform-console-standalone.jar https://repo1.maven.org/maven2/org/junit/platform/junit-platform-console-standalone/1.11.4/junit-platform-console-standalone-1.11.4.jar
           curl -L -o lib/mockito-core.jar https://repo1.maven.org/maven2/org/mockito/mockito-core/5.7.0/mockito-core-5.7.0.jar
-          curl -L -o lib/javaservlet.jar https://repo1.maven.org/maven2/javax/servlet/javax.servlet-api/3.0.1/javax.servlet-api-3.0.1.jar
-          curl -L -o lib/javajava.jar https://repo1.maven.org/maven2/org/jfree/jcommon/1.0.17/jcommon-1.0.17.jar 
+          
+      - name: Download JFreeChart JARs
+        run: |
+          curl -L -o lib/jfreechart.jar https://repo1.maven.org/maven2/org/jfree/jfreechart/1.5.3/jfreechart-1.5.3.jar
+          curl -L -o lib/jcommon.jar https://repo1.maven.org/maven2/org/jfree/jcommon/1.0.23/jcommon-1.0.23.jar
+
           
       - name: Compile Java Code and Tests
         run: |
-          mkdir -p bin
-          find src tests -name "*.java" > sources.txt
-          javac -d bin -cp lib/junit-platform-console-standalone.jar:lib/mockito-core.jar @sources.txt
+              mkdir -p bin
+              find src tests -name "*.java" > sources.txt
+              javac -d bin -cp "lib/jfreechart.jar:lib/jcommon.jar:lib/junit-platform-console-standalone.jar:lib/mockito-core.jar" @sources.txt
+
       
       - name: Run JUnit Tests
         run: |
