@@ -23,7 +23,7 @@ jobs:
       
       - name: Compile Java Code and Tests
         run: |
-          mkdir bin
+          mkdir -p bin
           javac -d bin -cp lib/junit-platform-console-standalone.jar src/data/Range.java tests/*.java
       
       - name: Run JUnit Tests
